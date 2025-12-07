@@ -426,7 +426,7 @@
                     </div>
                     <div class="day-row">
                         <div class="day-label">日曜日</div>
-                        <input type="text" class="input-field" placeholder="例）来週のファーストアクションを1つだけ決める" style="margin: 0;">
+                        <input type="text" class="input-field" placeholder="例）来週のファーストアクションを1つだけ決める" style="margin: 0%;">
                         <input type="checkbox" class="day-checkbox">
                     </div>
                 </div>
@@ -463,6 +463,11 @@
                 できなかった日があっても、自分を責めないでください。<br>
                 「設計を調整する」視点で、やさしく見直していきましょう。
             </div>
+
+            <!-- リセットボタン -->
+            <button class="btn" id="reset-data" type="button" style="margin-top: 24px;">
+                このシートの入力内容をリセットする
+            </button>
             
             <!-- フッター -->
             <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #e0e0e0; text-align: center;">
@@ -476,5 +481,69 @@
             </div>
         </div>
     </div>
+
+    <!-- 自動保存＆復元スクリプト -->
+    <script>
+      // 1/10分解シート 自動保存スクリプト（ブラウザ内だけに保存）
+      window.addEventListener("DOMContentLoaded", function () {
+        // 保存対象のフィールドを全部拾う
+        const fields = Array.from(
+          document.querySelectorAll(
+            "textarea.input-field, input.input-field, .breakdown-input, .day-checkbox"
+          )
+        );
+
+        // 各フィールドごとにキーを振っておく
+        fields.forEach(function (field, index) {
+          const key = "oneTenthSheet_v1_field_" + index;
+          field.dataset.saveKey = key;
+
+          // すでに保存済みの値があれば復元
+          const saved = localStorage.getItem(key);
+          if (saved !== null) {
+            if (field.type === "checkbox") {
+              field.checked = saved === "1";
+            } else {
+              field.value = saved;
+            }
+          }
+
+          // 入力・変更が起きたら保存
+          const saveHandler = function () {
+            if (field.type === "checkbox") {
+              localStorage.setItem(key, field.checked ? "1" : "0");
+            } else {
+              localStorage.setItem(key, field.value);
+            }
+          };
+
+          field.addEventListener("input", saveHandler);
+          field.addEventListener("change", saveHandler);
+        });
+
+        // リセットボタン（全部消したいとき用）
+        const resetBtn = document.getElementById("reset-data");
+        if (resetBtn) {
+          resetBtn.addEventListener("click", function () {
+            const ok = window.confirm(
+              "このシートの入力内容をすべて消去しますか？（この端末・このブラウザ内のデータが消えます）"
+            );
+            if (!ok) return;
+
+            fields.forEach(function (field) {
+              const key = field.dataset.saveKey;
+              if (!key) return;
+
+              localStorage.removeItem(key);
+              if (field.type === "checkbox") {
+                field.checked = false;
+              } else {
+                field.value = "";
+              }
+            });
+          });
+        }
+      });
+    </script>
 </body>
 </html>
