@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1/10分解シート</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .input-group {
+            margin-bottom: 24px;
+        }
+        
+        .input-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea.input-field {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .breakdown-item {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.3s;
+        }
+        
+        .breakdown-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .breakdown-number {
+            font-size: 12px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .breakdown-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .weekly-plan {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+        
+        .day-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 60px;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .day-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .day-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .reflection-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .reflection-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .note {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .usage-guide {
+            background: #f0f4ff;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .usage-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-right: 16px;
+        }
+        
+        .step-content h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        
+        .step-content p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 1/10分解シート</h1>
+            <p>大きな目標を、今日から動ける超小さな一歩に分解していきましょう</p>
+        </div>
+        
+        <div class="content">
+            <!-- 使い方ガイド -->
+            <div class="usage-guide">
+                <h2 style="margin-bottom: 20px; color: #667eea;">📖 このシートの使い方</h2>
+                
+                <div class="usage-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>最終目標を書く</h3>
+                        <p>いつか到達したい状態を、ざっくり書いてください。完璧じゃなくてOKです。</p>
+                    </div>
+                </div>
+                
+                <div class="usage-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>1/10に分解する</h3>
+                        <p>その目標に近づくための中間地点を、10個のステップに分けます。</p>
+                    </div>
+                </div>
+                
+                <div class="usage-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>今の自分に合う1/10を選ぶ</h3>
+                        <p>10個全部を一気にやる必要はありません。「今やるべきはどこか？」を決めます。</p>
+                    </div>
+                </div>
+                
+                <div class="usage-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>1週間の行動に落とす</h3>
+                        <p>選んだステップを、「今週やること」まで具体化します。</p>
+                    </div>
+                </div>
+                
+                <div class="usage-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>振り返りと改善</h3>
+                        <p>1週間終わったら、3つだけ振り返ります。完璧を目指さなくてOKです。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STEP 1 -->
+            <div class="section">
+                <div class="section-title">STEP 1：最終的に目指したい状態</div>
+                <p style="margin-bottom: 16px; color: #666; font-size: 14px;">
+                    このシートは、副業で月3〜5万円を目指す人向けに作っています。<br>
+                    もちろん、英語学習や資産形成など、他の目標にも使えます。
+                </p>
+                <div class="input-group">
+                    <label class="input-label">あなたが「いつか到達したい状態」をざっくり書いてください</label>
+                    <textarea class="input-field" placeholder="例）副業で月3万円のプラス収入を、ムリなく続けて目指したい&#10;例）英語で日常会話を楽しめるようになりたい&#10;例）NISAでコツコツ資産を増やしていきたい"></textarea>
+                </div>
+                
+                <div class="note">
+                    💡 <strong>ポイント：</strong>この段階では、まだざっくりでOKです。「こうなったらいいな」くらいの感覚で書いてみてください。
+                </div>
+            </div>
+            
+            <!-- STEP 2 -->
+            <div class="section">
+                <div class="section-title">STEP 2：目標を「1/10」に分解する</div>
+                <p style="margin-bottom: 20px; color: #666; line-height: 1.6;">
+                    ゴールに近づくための中間地点を、10個のブロックに分けていきます。<br>
+                    完璧な順番でなくてもOK。思いつくものから書いてみましょう。
+                </p>
+                
+                <div class="breakdown-grid">
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">1/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）副業に使える時間を棚卸し">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">2/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）興味ある分野を3〜5個出す">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">3/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）その中から1つに絞る">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">4/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）1人の発信者から学ぶ">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">5/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）小さな実践（1件の発信）">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">6/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）1ヶ月のログを取る">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">7/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）続けやすいパターンを見つける">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">8/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）収益ポイントを1つ決める">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">9/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）小さな改善サイクルを回す">
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number">10/10</div>
+                        <input type="text" class="breakdown-input" placeholder="例）安定収入を目指す">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STEP 3 -->
+            <div class="section">
+                <div class="section-title">STEP 3：今の自分に合う「1/10」を選ぶ</div>
+                <div class="input-group">
+                    <label class="input-label">10個の中から、「今の自分がやるべき1/10」を1つ選んでください</label>
+                    <input type="text" class="input-field" placeholder="例）1/10（副業に使える時間を棚卸し）">
+                </div>
+                
+                <div class="note">
+                    💡 <strong>選び方のヒント：</strong><br>
+                    ・まだ何をやるかすら決まっていない → 1〜3あたり<br>
+                    ・もうやることは決まっている → 5〜7あたり<br>
+                    ・すでに少し収益が出ている → 8〜10あたり
+                </div>
+            </div>
+            
+            <!-- STEP 4 -->
+            <div class="section">
+                <div class="section-title">STEP 4：選んだ1/10を「今週やること」に落とす</div>
+                <p style="margin-bottom: 20px; color: #666; line-height: 1.6;">
+                    選んだステップを、1週間単位の具体的な行動に分解します。<br>
+                    <strong>1日あたり「3〜5分でできること」</strong>を目安に書いてください。
+                </p>
+                
+                <div class="weekly-plan">
+                    <div class="day-row">
+                        <div class="day-label">月曜日</div>
+                        <input type="text" class="input-field" placeholder="例）今週の目標をノートに1行だけ書く" style="margin: 0;">
+                        <input type="checkbox" class="day-checkbox">
+                    </div>
+                    <div class="day-row">
+                        <div class="day-label">火曜日</div>
+                        <input type="text" class="input-field" placeholder="例）スマホのメモに使える時間を3つ書き出す" style="margin: 0;">
+                        <input type="checkbox" class="day-checkbox">
+                    </div>
+                    <div class="day-row">
+                        <div class="day-label">水曜日</div>
+                        <input type="text" class="input-field" placeholder="例）1日のスケジュールを見直して5分の隙間を見つける" style="margin: 0;">
+                        <input type="checkbox" class="day-checkbox">
+                    </div>
+                    <div class="day-row">
+                        <div class="day-label">木曜日</div>
+                        <input type="text" class="input-field" placeholder="例）副業に使える時間を1つだけ選ぶ" style="margin: 0;">
+                        <input type="checkbox" class="day-checkbox">
+                    </div>
+                    <div class="day-row">
+                        <div class="day-label">金曜日</div>
+                        <input type="text" class="input-field" placeholder="例）その時間に何をするか、1行だけ決める" style="margin: 0;">
+                        <input type="checkbox" class="day-checkbox">
+                    </div>
+                    <div class="day-row">
+                        <div class="day-label">土曜日</div>
+                        <input type="text" class="input-field" placeholder="例）今週の振り返りを3行だけ書く" style="margin: 0;">
+                        <input type="checkbox" class="day-checkbox">
+                    </div>
+                    <div class="day-row">
+                        <div class="day-label">日曜日</div>
+                        <input type="text" class="input-field" placeholder="例）来週のファーストアクションを1つだけ決める" style="margin: 0;">
+                        <input type="checkbox" class="day-checkbox">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STEP 5 -->
+            <div class="section">
+                <div class="section-title">STEP 5：1週間の振り返り</div>
+                <p style="margin-bottom: 20px; color: #666; line-height: 1.6;">
+                    1週間が終わったら、次の3つだけを書いてみてください。<br>
+                    一言ずつでOKです。完璧に分析する必要はありません。
+                </p>
+                
+                <div class="reflection-box">
+                    <div class="reflection-title">✅ うまくいったこと</div>
+                    <textarea class="input-field" placeholder="例）朝の5分でやると決めたら、3日続いた"></textarea>
+                </div>
+                
+                <div class="reflection-box" style="background: #f8d7da; border-color: #dc3545;">
+                    <div class="reflection-title" style="color: #721c24;">⚠️ うまくいかなかったこと</div>
+                    <textarea class="input-field" placeholder="例）夜にやろうとしたら、疲れて続かなかった"></textarea>
+                </div>
+                
+                <div class="reflection-box" style="background: #d4edda; border-color: #28a745;">
+                    <div class="reflection-title" style="color: #155724;">💡 来週試してみたい工夫</div>
+                    <textarea class="input-field" placeholder="例）朝の時間帯に固定してみる"></textarea>
+                </div>
+            </div>
+            
+            <div class="note" style="background: #fff3e0; border-left-color: #ff9800;">
+                📌 <strong>大切なこと：</strong><br>
+                このシートは「完璧に埋める」ためのものではありません。<br>
+                「今の自分が、無理なく一歩を踏み出せるか？」を確認するためのツールです。<br>
+                できなかった日があっても、自分を責めないでください。<br>
+                「設計を調整する」視点で、やさしく見直していきましょう。
+            </div>
+            
+            <!-- フッター -->
+            <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #e0e0e0; text-align: center;">
+                <p style="font-size: 14px; color: #666; line-height: 1.8; margin-bottom: 12px;">
+                    <strong>制作者：ナギト｜3日坊主を365日に変える継続設計士</strong>
+                </p>
+                <p style="font-size: 13px; color: #888; line-height: 1.8;">
+                    このシートが、今日の「小さな一歩」を決めるきっかけになればうれしいです。<br>
+                    もし1週間使ってみて気づきがあれば、ぜひフィードバックを教えてください。
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
