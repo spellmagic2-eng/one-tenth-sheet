@@ -483,37 +483,52 @@
     </div>
 
     <!-- 自動保存＆復元スクリプト -->
+      <!-- 自動保存＆復元スクリプト（安全版） -->
     <script>
-      // 1/10分解シート 自動保存スクリプト（ブラウザ内だけに保存）
       window.addEventListener("DOMContentLoaded", function () {
-        // 保存対象のフィールドを全部拾う
+        // localStorageが使えない場合に備えてフラグを立てる
+        let storageAvailable = true;
+        try {
+          const testKey = "__oneTenthSheet_test__";
+          localStorage.setItem(testKey, "1");
+          localStorage.removeItem(testKey);
+        } catch (e) {
+          storageAvailable = false;
+          console.warn("localStorageが利用できない環境のため、自動保存はオフになります。");
+        }
+
         const fields = Array.from(
           document.querySelectorAll(
             "textarea.input-field, input.input-field, .breakdown-input, .day-checkbox"
           )
         );
 
-        // 各フィールドごとにキーを振っておく
         fields.forEach(function (field, index) {
           const key = "oneTenthSheet_v1_field_" + index;
           field.dataset.saveKey = key;
 
-          // すでに保存済みの値があれば復元
-          const saved = localStorage.getItem(key);
-          if (saved !== null) {
-            if (field.type === "checkbox") {
-              field.checked = saved === "1";
-            } else {
-              field.value = saved;
+          if (storageAvailable) {
+            // すでに保存済みの値があれば復元
+            const saved = localStorage.getItem(key);
+            if (saved !== null) {
+              if (field.type === "checkbox") {
+                field.checked = saved === "1";
+              } else {
+                field.value = saved;
+              }
             }
           }
 
-          // 入力・変更が起きたら保存
           const saveHandler = function () {
-            if (field.type === "checkbox") {
-              localStorage.setItem(key, field.checked ? "1" : "0");
-            } else {
-              localStorage.setItem(key, field.value);
+            if (!storageAvailable) return;
+            try {
+              if (field.type === "checkbox") {
+                localStorage.setItem(key, field.checked ? "1" : "0");
+              } else {
+                localStorage.setItem(key, field.value);
+              }
+            } catch (e) {
+              console.warn("localStorageへの保存に失敗しました:", e);
             }
           };
 
@@ -534,7 +549,14 @@
               const key = field.dataset.saveKey;
               if (!key) return;
 
-              localStorage.removeItem(key);
+              if (storageAvailable) {
+                try {
+                  localStorage.removeItem(key);
+                } catch (e) {
+                  console.warn("localStorageからの削除に失敗しました:", e);
+                }
+              }
+
               if (field.type === "checkbox") {
                 field.checked = false;
               } else {
@@ -547,3 +569,4 @@
     </script>
 </body>
 </html>
+
